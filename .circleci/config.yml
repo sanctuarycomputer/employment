@@ -7,7 +7,6 @@ defaults: &defaults
       environment:
         PGHOST: localhost
         PGUSER: employment 
-        BUNDLER_VERSION: 2.0.1
     - image: circleci/postgres:11.1-alpine-ram
       environment:
         POSTGRES_USER: employment 
@@ -24,6 +23,12 @@ jobs:
       - restore_cache:
           keys:
             - rails-dependencies-{{ checksum "Gemfile" }}
+      - run:
+          name: Configure Bundler
+          command: |
+            echo 'export BUNDLER_VERSION=$(cat Gemfile.lock | tail -1 | tr -d " ")' >> $BASH_ENV
+            source $BASH_ENV
+            gem install bundler
       - run:
           name: "Install Ruby Deps"
           command: bundle check --path=vendor/bundle || bundle install --path=vendor/bundle --jobs=4 --retry=3
