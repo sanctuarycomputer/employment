@@ -14,6 +14,11 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
+  config.after(:suite) do
+    Employment::Utils.job_kubeclient.get_jobs.each{|job| Employment::Utils.job_kubeclient.delete_job(job.metadata.name, job.metadata.namespace) }
+    Employment::Utils.kubeclient.get_pods.each{|pod| Employment::Utils.kubeclient.delete_pod(pod.metadata.name, pod.metadata.namespace) }
+  end
+
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.
