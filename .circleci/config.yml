@@ -1,0 +1,59 @@
+version: 2
+
+defaults: &defaults
+  working_directory: ~/employment
+  docker:
+    - image: circleci/ruby:2.5.1
+      environment:
+        PGHOST: localhost
+        PGUSER: employment 
+    - image: circleci/postgres:11.1-alpine-ram
+      environment:
+        POSTGRES_USER: employment 
+        POSTGRES_DB: employment_development
+        POSTGRES_PASSWORD: ""
+
+jobs:
+  setup-workspace:
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/employment
+      - restore_cache:
+          keys:
+            - rails-dependencies-{{ checksum "Gemfile" }}
+      - run:
+          name: "Install Ruby Deps"
+          command: bundle check --path=vendor/bundle || bundle install --path=vendor/bundle --jobs=4 --retry=3
+      - save_cache:
+          key: rails-dependencies-{{ checksum "Gemfile" }}
+          paths:
+            - vendor/bundle
+      - persist_to_workspace:
+          root: .
+          paths: .
+
+  rails-tests:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/employment
+      - run:
+          name: "Bundle Check"
+          command: bundle check --path=vendor/bundle
+      - run:
+          name: "Load Schema"
+          command: bundle exec rake db:create db:schema:load 
+      - run:
+          name: "Run Tests"
+          command: bundle exec rspec 
+
+workflows:
+  version: 2
+  test-all:
+    jobs:
+      - setup-workspace
+      - rails-tests:
+          requires:
+            - setup-workspace
