@@ -1,0 +1,12 @@
+en:
+  exceptions:
+    job:
+      does_not_exist:
+        title: 'Job does not exist'
+        detail: 'The job you are referring to either was never created, or has since been destroyed.'
+        status: 'not_found'
+    command:
+      no_shebang:
+        title: 'Script without Shebang'
+        detail: 'You passed a string for your command, so we treat it as a script. However, it did not have a shebang (eg: #!/bin/bash) as the first line. Please find the appropriate shell for your image, and add it.'
+        status: 'unprocessable_entity'
