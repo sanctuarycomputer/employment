@@ -1,9 +1,14 @@
 require 'rails_helper'
 
 describe WorkRequest::Make, use_case: true do
+  let(:api_key) {
+    FactoryBot.create(:api_key)
+  }
+
   describe "perform" do
     subject { 
       WorkRequest::Make.perform(
+        api_key,
         'perl',
         ['perl',  '-Mbignum=bpi', '-wle', 'print bpi(2000)'],
         {},
@@ -35,7 +40,7 @@ describe WorkRequest::Make, use_case: true do
 
   describe "perform with a complicated shell script (with shebang)" do
     subject { 
-      WorkRequest::Make.perform('node:8-alpine', command, {}) 
+      WorkRequest::Make.perform(api_key, 'node:8-alpine', command, {}) 
     }
 
     let(:command) {
@@ -68,7 +73,7 @@ describe WorkRequest::Make, use_case: true do
 
   describe "perform with a simple shell script that has env vars" do
     subject { 
-      WorkRequest::Make.perform('node:8-alpine', command, { pablo: "picaso" }) 
+      WorkRequest::Make.perform(api_key, 'node:8-alpine', command, { pablo: "picaso" }) 
     }
 
     let(:command) {
@@ -93,7 +98,7 @@ describe WorkRequest::Make, use_case: true do
 
   describe "perform with a simple shell script that has an if statement and empty lines" do
     subject { 
-      WorkRequest::Make.perform('node:8-alpine', command, {}) 
+      WorkRequest::Make.perform(api_key, 'node:8-alpine', command, {}) 
     }
 
     let(:command) {
@@ -123,7 +128,7 @@ describe WorkRequest::Make, use_case: true do
 
   describe "raise exception if the script has no shebang" do
     subject { 
-      WorkRequest::Make.perform('node:8-alpine', command, {}) 
+      WorkRequest::Make.perform(api_key, 'node:8-alpine', command, {}) 
     }
 
     let(:command) {

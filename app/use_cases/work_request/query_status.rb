@@ -9,8 +9,20 @@ class WorkRequest::QueryStatus
   end
 
   def perform
+    # If it's already terminated, attempt a cleanup, then return
+    if (
+      @work_request.latest_status_query.present? &&
+      @work_request.latest_status_query["state"] == "terminated"
+    )
+      WorkRequest::Cleanup.perform(@work_request) unless @work_request.is_cleaned_up?
+      @log = @work_request.log
+      @container_state = @work_request.latest_status_query
+      return
+    end
+
+    # If there's a recent reading, return that 
     recent_reading = (@work_request.status_queries || {}).keys.find do |ts| 
-      DateTime.parse(ts) > (DateTime.now - 10.seconds)
+      DateTime.parse(ts) > (DateTime.now - 5.seconds)
     end
     if (recent_reading.present?)
       @log = @work_request.log
@@ -28,7 +40,7 @@ class WorkRequest::QueryStatus
     return unless state.present?
     @container_state = serialize_container_state(state)
 
-    # Let's get the Log
+    # Let's get the Log if we can
     if (["running", "terminated"].include?(@container_state["state"]))
       @log = Employment::Utils.kubeclient.get_pod_log(
         job_pod.metadata.name, 
@@ -37,16 +49,14 @@ class WorkRequest::QueryStatus
     end
 
     # Cache the query & Log
-    new_status_queries = @work_request.status_queries.merge({
-      "#{DateTime.now.utc.iso8601}": @container_state
-    })
-
     @work_request.update({
-      status_queries: new_status_queries,
+      status_queries: @work_request.status_queries.merge({
+        "#{DateTime.now.utc.iso8601}": @container_state
+      }),
       log: @log
     })
 
-    # Cleanup if necessary
+    # Cleanup if it became terminated
     WorkRequest::Cleanup.perform(@work_request) if self.terminated?
   end
 

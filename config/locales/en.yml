@@ -1,9 +1,22 @@
 en:
   exceptions:
+    api:
+      not_found:
+        title: 'Resource Not Found'
+        detail: 'The Resource you were looking for could not be found.'
+        status: 'not_found'
+      invalid_api_key:
+        title: 'Api Key is invalid or missing'
+        detail: 'The X-Employment-Api-Key header was invalid or missing.'
+        status: 'not_found'
     job:
+      no_image:
+        title: 'No Image Passed'
+        detail: 'You can not create a job without passing a public docker image.'
+        status: 'unprocessable_entity'
       does_not_exist:
         title: 'Job does not exist'
-        detail: 'The job you are referring to either was never created, or has since been destroyed.'
+        detail: 'The job attached to this work_request was never created.'
         status: 'not_found'
     command:
       no_shebang:
