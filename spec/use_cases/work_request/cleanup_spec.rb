@@ -2,8 +2,12 @@ require 'rails_helper'
 
 describe WorkRequest::Cleanup, use_case: true do
   describe "perform" do
+    let(:api_key) {
+      FactoryBot.create(:api_key)
+    }
     it "should be successful" do
       work_request = WorkRequest::Make.perform(
+        api_key,
         'perl',
         ['perl',  '-Mbignum=bpi', '-wle', 'print bpi(2000)'],
         {},

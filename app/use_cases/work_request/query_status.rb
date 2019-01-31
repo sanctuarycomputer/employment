@@ -2,11 +2,10 @@ class WorkRequest::QueryStatus
   include Employment::UseCase
   attr_reader :log, :container_state, :work_request
 
-  def initialize(work_request, force_reading = false)
+  def initialize(work_request)
     @work_request = work_request
     @container_state = { "state" => "unknown" }
     @log = ""
-    @force_reading = force_reading
   end
 
   def perform
@@ -22,15 +21,13 @@ class WorkRequest::QueryStatus
     end
 
     # If there's a recent reading, return that 
-    unless @force_reading 
-      recent_reading = (@work_request.status_queries || {}).keys.find do |ts| 
-        DateTime.parse(ts) > (DateTime.now - 5.seconds)
-      end
-      if (recent_reading.present?)
-        @log = @work_request.log
-        @container_state = @work_request.status_queries[recent_reading]
-        return
-      end
+    recent_reading = (@work_request.status_queries || {}).keys.find do |ts| 
+      DateTime.parse(ts) > (DateTime.now - 5.seconds)
+    end
+    if (recent_reading.present?)
+      @log = @work_request.log
+      @container_state = @work_request.status_queries[recent_reading]
+      return
     end
 
     # OK, make the request
