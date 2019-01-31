@@ -7,7 +7,10 @@ class Employment::Exception < ::Exception
   attr_accessor :detail
 
   class NoShebang < Employment::Exception; end
+  class NotFound < Employment::Exception; end
+  class NoImage < Employment::Exception; end
   class NoJobExists < Employment::Exception; end
+  class InvalidApiKey < Employment::Exception; end
 
   def initialize(code, details={}, validations={})
     @details     = details

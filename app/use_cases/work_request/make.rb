@@ -2,16 +2,14 @@ class WorkRequest::Make
   include Employment::UseCase
   attr_reader :work_request
 
-  def initialize(image, command, env)
+  def initialize(api_key, image, command, env)
     # TODO: validate 
     # TODO: handle resources
     @image = image
     @command = sanitize(command) 
     @env = env
 
-    @work_request = WorkRequest.create({
-      received_at: DateTime.now.utc
-    })
+    @work_request = WorkRequest.create({ api_key: api_key })
   end
 
   def perform
@@ -68,7 +66,6 @@ class WorkRequest::Make
       end
     end
 
-    # TODO
-    raise "unacceptable"
+    raise "no"
   end
 end

@@ -10,20 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_30_001816) do
+ActiveRecord::Schema.define(version: 2019_01_31_184453) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
+  create_table "api_keys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "email", limit: 48
+    t.string "key", limit: 48
+    t.integer "state", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "work_requests", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "api_key_id", null: false
     t.string "log", default: ""
     t.jsonb "job_definition", default: {}
     t.jsonb "status_queries", default: {}
-    t.datetime "received_at"
     t.datetime "cleaned_up_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["api_key_id"], name: "index_work_requests_on_api_key_id"
   end
 
 end

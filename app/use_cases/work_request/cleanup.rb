@@ -17,8 +17,10 @@ class WorkRequest::Cleanup
     rescue Kubeclient::ResourceNotFoundError
     end
 
-    @work_request.update({
-      cleaned_up_at: DateTime.now.utc
-    })
+    unless @work_request.is_cleaned_up?
+      @work_request.update({
+        cleaned_up_at: DateTime.now.utc
+      })
+    end
   end
 end
