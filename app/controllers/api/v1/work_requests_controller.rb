@@ -37,7 +37,8 @@ class Api::V1::WorkRequestsController < ApplicationController
       status_queries: @work_request.status_queries.merge({
         "#{DateTime.now.utc.iso8601}": {
           "state" => "terminated",
-          "message" => "via API"
+          "message" => "via API",
+          "previous_status" => @work_request.latest_status_query
         }
       })
     })

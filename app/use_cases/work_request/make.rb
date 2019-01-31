@@ -3,12 +3,11 @@ class WorkRequest::Make
   attr_reader :work_request
 
   def initialize(api_key, image, command, env)
-    # TODO: validate 
     # TODO: handle resources
+    
     @image = image
     @command = sanitize(command) 
     @env = env
-
     @work_request = WorkRequest.create({ api_key: api_key })
   end
 

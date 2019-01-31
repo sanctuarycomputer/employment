@@ -21,8 +21,6 @@ class WorkRequest::QueryStatus
       return
     end
 
-    ## TODO: Handle { state: "waiting", reason: "ErrImagePull" }
-
     # If there's a recent reading, return that 
     unless @force_reading 
       recent_reading = (@work_request.status_queries || {}).keys.find do |ts| 
