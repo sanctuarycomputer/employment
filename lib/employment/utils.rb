@@ -1,7 +1,16 @@
 class Employment::Utils
   class << self
+    def droplet_kit_client
+      require 'droplet_kit'
+      @droplet_kit_client ||= DropletKit::Client.new(access_token: Employment::Config.get[:digital_ocean_token])
+    end
+
     def config 
-      Kubeclient::Config.new(YAML.safe_load(Employment::Config.get[:kube_config]), nil)
+      # TODO: Cache this
+      loaded_config = droplet_kit_client.kubernetes_clusters.kubeconfig(
+        id: droplet_kit_client.kubernetes_clusters.all.find{|cluster| cluster.name == Employment::Config.get[:cluster_name]}.id
+      )
+      Kubeclient::Config.new(YAML.safe_load(loaded_config), nil)
     end
 
     def job_kubeclient 

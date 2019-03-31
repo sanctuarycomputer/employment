@@ -9,6 +9,7 @@ gem 'puma', '~> 3.11'
 gem 'bootsnap', '>= 1.1.0', require: false
 gem 'kubeclient'
 gem 'sentry-raven'
+gem 'droplet_kit'
 
 group :development, :test do
   gem 'pry'
