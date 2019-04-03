@@ -40,6 +40,16 @@ class WorkRequest::Make
               env: (@env.map do |k, v|
                 { name: k, value: v }
               end)
+              resources: {
+                limits: {
+                  cpu: '250m',
+                  memory: '512Mi'
+                },
+                requests: {
+                  cpu: '125m',
+                  memory: '256Mi'
+                }
+              }
             }],
             restartPolicy: 'Never'
           }
