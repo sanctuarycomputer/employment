@@ -39,7 +39,7 @@ class WorkRequest::Make
               command: @command,
               env: (@env.map do |k, v|
                 { name: k, value: v }
-              end)
+              end),
               resources: {
                 limits: {
                   cpu: '250m',
